@@ -1,32 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Calendar, Trash2, Plus, Edit } from 'lucide-react';
 import Modal from './Modal';
+import { fetchAPI } from '../utils/api';
 
 export default function Home() {
   const [concerts, setConcerts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // เพิ่ม 'confirm' เข้าไปใน Type ของ Modal
-  const [modal, setModal] = useState({ 
-    open: false, 
-    type: 'info' as 'success' | 'error' | 'info' | 'confirm', 
-    title: '', 
-    msg: '', 
-    pendingId: null as number | null 
-  });
+  const [modal, setModal] = useState({ open: false, type: 'info' as 'success' | 'error' | 'info' | 'confirm', title: '', msg: '', pendingId: null as number | null });
 
   const role = localStorage.getItem('role');
   const isAdmin = role === 'ADMIN';
 
   useEffect(() => {
-    const url = isAdmin ? 'http://localhost:5000/api/admin/concerts' : 'http://localhost:5000/api/concerts';
-    fetch(url, { headers: isAdmin ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` } : {} })
-      .then(res => res.json())
-      .then(data => { setConcerts(data); setLoading(false); });
+    const endpoint = isAdmin ? '/admin/concerts' : '/concerts';
+    fetchAPI(endpoint)
+      .then(data => { setConcerts(data); setLoading(false); })
+      .catch(err => console.error(err));
   }, [isAdmin]);
 
-  // เปลี่ยนเป็นเรียก Modal แบบ confirm
   const confirmDelete = (id: number) => {
     setModal({ open: true, type: 'confirm', title: 'ยืนยันการลบ', msg: 'คุณแน่ใจหรือไม่ที่จะลบคอนเสิร์ตนี้?', pendingId: id });
   };
@@ -36,19 +28,11 @@ export default function Home() {
     if (!id) return;
     
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/concerts/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-      });
-      if (res.ok) {
-        setConcerts(concerts.filter(c => c.id !== id));
-        setModal({ open: true, type: 'success', title: 'สำเร็จ', msg: 'ลบคอนเสิร์ตเรียบร้อยแล้ว', pendingId: null });
-      } else {
-        const errData = await res.json();
-        setModal({ open: true, type: 'error', title: 'ผิดพลาด', msg: errData.error || 'ไม่สามารถลบได้', pendingId: null });
-      }
-    } catch (err) {
-      setModal({ open: true, type: 'error', title: 'ผิดพลาด', msg: 'ระบบขัดข้อง ไม่สามารถลบได้', pendingId: null });
+      await fetchAPI(`/admin/concerts/${id}`, { method: 'DELETE' });
+      setConcerts(concerts.filter(c => c.id !== id));
+      setModal({ open: true, type: 'success', title: 'สำเร็จ', msg: 'ลบคอนเสิร์ตเรียบร้อยแล้ว', pendingId: null });
+    } catch (err: any) {
+      setModal({ open: true, type: 'error', title: 'ผิดพลาด', msg: err.message || 'ไม่สามารถลบได้', pendingId: null });
     }
   };
 
@@ -56,15 +40,7 @@ export default function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
-      <Modal 
-        isOpen={modal.open} 
-        type={modal.type} 
-        title={modal.title} 
-        message={modal.msg} 
-        onClose={() => setModal({ ...modal, open: false, pendingId: null })} 
-        // เพิ่ม onConfirm เข้าไปเพื่อรับคำสั่งกดยืนยัน
-        onConfirm={modal.type === 'confirm' ? handleDelete : undefined}
-      />
+      <Modal isOpen={modal.open} type={modal.type} title={modal.title} message={modal.msg} onClose={() => setModal({ ...modal, open: false, pendingId: null })} onConfirm={modal.type === 'confirm' ? handleDelete : undefined} />
 
       {isAdmin && (
         <div className="flex justify-end">
@@ -77,11 +53,9 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {concerts.map(concert => (
           <div key={concert.id} className="relative group bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-blue-500 transition-all hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(59,130,246,0.1)]">
-            
             {isAdmin && !concert.isPublished && (
               <div className="absolute top-4 right-4 bg-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg">DRAFT</div>
             )}
-
             {isAdmin && (
               <div className="absolute top-4 left-4 z-20 flex gap-2">
                 <Link to={`/admin/concert/${concert.id}`} className="bg-blue-600/90 hover:bg-blue-500 p-2 rounded-lg text-white shadow-lg"><Edit size={16} /></Link>
