@@ -1,0 +1,29 @@
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import Home from './components/Home';
+import EventDetails from './components/EventDetails';
+import Checkout from './components/Checkout';
+import Login from './components/Login';
+import AdminConcertForm from './components/AdminConcertForm';
+import Inventory from './components/Inventory';
+import TradeMarket from './components/TradeMarket';
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/event/:id" element={<EventDetails />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/trade" element={<TradeMarket />} />
+          <Route path="/admin/concert" element={<AdminConcertForm />} />
+          <Route path="/admin/concert/:id" element={<AdminConcertForm />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
+  );
+}

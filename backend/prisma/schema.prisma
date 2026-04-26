@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  email       String   @unique
+  password    String   
+  role        String   @default("USER")
+  tickets     Ticket[] 
+  tradesSold  Trade[]  @relation("TradesSold")
+  tradesBought Trade[] @relation("TradesBought")
+}
+
+model Concert {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  date        String   
+  time        String   
+  venue       String
+  image       String?
+  isPublished Boolean  @default(false) // <-- เพิ่มสถานะ Public/Private
+  seats       Seat[]   
+}
+
+model Seat {
+  id        Int      @id @default(autoincrement())
+  concertId Int
+  concert   Concert  @relation(fields: [concertId], references: [id])
+  row       String     
+  number    Int        
+  tier      String     
+  price     Int      @default(0)
+  status    String   @default("AVAILABLE")
+  ticket    Ticket?    
+}
+
+model Ticket {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  seatId      Int      @unique
+  seat        Seat     @relation(fields: [seatId], references: [id])
+  purchasedAt DateTime @default(now())
+  trade       Trade?
+}
+
+model Trade {
+  id          Int      @id @default(autoincrement())
+  ticketId    Int      @unique
+  ticket      Ticket   @relation(fields: [ticketId], references: [id])
+  sellerId    Int
+  seller      User     @relation("TradesSold", fields: [sellerId], references: [id])
+  buyerId     Int?
+  buyer       User?    @relation("TradesBought", fields: [buyerId], references: [id])
+  price       Int
+  status      String   @default("OPEN")  // OPEN | SOLD | CANCELLED
+  listedAt    DateTime @default(now())
+  soldAt      DateTime?
+}
