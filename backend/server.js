@@ -143,12 +143,19 @@ app.delete('/api/admin/concerts/:id', authenticateToken, isAdmin, async (req, re
   try {
     const concertId = parseInt(req.params.id);
     await prisma.$transaction([
+      // 1. เพิ่มบรรทัดนี้: ต้องลบรายการ Trade ที่ผูกกับตั๋วของคอนเสิร์ตนี้ทิ้งก่อน
+      prisma.trade.deleteMany({ where: { ticket: { seat: { concertId } } } }),
+      // 2. ลบตั๋ว
       prisma.ticket.deleteMany({ where: { seat: { concertId } } }),
+      // 3. ลบที่นั่ง
       prisma.seat.deleteMany({ where: { concertId } }),
+      // 4. ลบคอนเสิร์ต
       prisma.concert.delete({ where: { id: concertId } })
     ]);
     res.json({ success: true });
-  } catch (error) { res.status(400).json({ error: error.message }); }
+  } catch (error) { 
+    res.status(400).json({ error: error.message }); 
+  }
 });
 
 // ================== Trade API ==================
