@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Modal from './Modal';
 
 export default function Login() {
-  const [isRegisterMode, setIsRegisterMode] = useState(false); // ควบคุมการสลับโหมด
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -11,10 +11,18 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // เช็คกรณีสมัครสมาชิกแล้วพิมพ์รหัสผ่านไม่ตรงกัน
-    if (isRegisterMode && password !== confirmPassword) {
-      setModal({ open: true, type: 'error', title: 'แจ้งเตือน', msg: 'กรุณากรอกรหัสผ่านให้ตรงกันทั้ง 2 ช่อง' });
-      return;
+    // ดักจับการสมัครสมาชิก
+    if (isRegisterMode) {
+      // 1. เช็คความยาวรหัสผ่าน
+      if (password.length < 8) {
+        setModal({ open: true, type: 'error', title: 'แจ้งเตือน', msg: 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร' });
+        return;
+      }
+      // 2. เช็ครหัสผ่านให้ตรงกัน
+      if (password !== confirmPassword) {
+        setModal({ open: true, type: 'error', title: 'แจ้งเตือน', msg: 'กรุณากรอกรหัสผ่านให้ตรงกันทั้ง 2 ช่อง' });
+        return;
+      }
     }
 
     const url = isRegisterMode ? 'http://localhost:5000/api/register' : 'http://localhost:5000/api/login';
@@ -53,7 +61,6 @@ export default function Login() {
         message={modal.msg} 
         onClose={() => {
           setModal({ ...modal, open: false });
-          // ใช้ window.location.href แทน navigate เพื่อให้ NavBar รู้ตัวว่าเราล็อกอินแล้ว
           if (modal.type === 'success') window.location.href = '/'; 
         }} 
       />
@@ -73,15 +80,15 @@ export default function Login() {
         </div>
         
         <div className={isRegisterMode ? "mb-5" : "mb-8"}>
-          <label className="block text-gray-400 text-sm font-bold mb-2">รหัสผ่าน</label>
-          <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)}
+          <label className="block text-gray-400 text-sm font-bold mb-2">รหัสผ่าน {isRegisterMode && <span className="text-xs font-normal text-gray-500">(ขั้นต่ำ 8 ตัวอักษร)</span>}</label>
+          <input required type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={isRegisterMode ? 8 : undefined}
             className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition" />
         </div>
 
         {isRegisterMode && (
           <div className="mb-8">
             <label className="block text-gray-400 text-sm font-bold mb-2">ยืนยันรหัสผ่านอีกครั้ง</label>
-            <input required type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}
+            <input required type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} minLength={8}
               className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition" />
           </div>
         )}

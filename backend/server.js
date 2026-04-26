@@ -27,15 +27,31 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
+// สมัครสมาชิกใหม่
 app.post('/api/register', async (req, res) => {
   const { email, password } = req.body;
+  
+  // เช็คความยาวรหัสผ่านที่ฝั่ง Backend เพื่อความปลอดภัยสูงสุด
+  if (!password || password.length < 8) {
+    return res.status(400).json({ error: 'รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร' });
+  }
+
   try {
+    // เช็คว่ามีอีเมลนี้หรือยัง
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) return res.status(400).json({ error: 'อีเมลนี้ถูกใช้งานแล้ว' });
-    const newUser = await prisma.user.create({ data: { email, password, role: 'USER' } });
+    
+    // สร้าง User ใหม่ (ให้ Role พื้นฐานเป็น USER)
+    const newUser = await prisma.user.create({
+      data: { email, password, role: 'USER' }
+    });
+    
+    // สร้าง Token ให้ล็อกอินอัตโนมัติเลย
     const token = jwt.sign({ id: newUser.id, role: newUser.role }, SECRET_KEY, { expiresIn: '24h' });
     res.json({ success: true, token, role: newUser.role });
-  } catch (error) { res.status(500).json({ error: error.message }); }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.post('/api/login', async (req, res) => {
