@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, MapPin, Ticket, ExternalLink, Tag, X, ShoppingBag } from 'lucide-react';
+import { Calendar, MapPin, Ticket, ExternalLink, Tag, X, ShoppingBag, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Modal from './Modal';
 
@@ -9,25 +9,15 @@ export default function Inventory() {
   const [myTrades, setMyTrades] = useState<{ selling: any[]; bought: any[] }>({ selling: [], bought: [] });
   const [loading, setLoading] = useState(true);
   const [sellPrice, setSellPrice] = useState<{ [ticketId: number]: string }>({});
-  const [modal, setModal] = useState({
-    open: false,
-    type: 'info' as 'success' | 'error' | 'info' | 'confirm',
-    title: '',
-    msg: '',
-    action: null as null | (() => void),
-  });
+  const [modal, setModal] = useState({ open: false, type: 'info' as 'success' | 'error' | 'info' | 'confirm', title: '', msg: '', action: null as null | (() => void) });
 
   const token = localStorage.getItem('token');
 
   const fetchAll = async () => {
     try {
       const [ticketRes, tradeRes] = await Promise.all([
-        fetch('http://localhost:5000/api/users/me/tickets', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }),
-        fetch('http://localhost:5000/api/users/me/trades', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }),
+        fetch('http://localhost:5000/api/users/me/tickets', { headers: { 'Authorization': `Bearer ${token}` } }),
+        fetch('http://localhost:5000/api/users/me/trades', { headers: { 'Authorization': `Bearer ${token}` } }),
       ]);
       const ticketData = await ticketRes.json();
       const tradeData = await tradeRes.json();
@@ -35,9 +25,7 @@ export default function Inventory() {
       setMyTrades({ selling: tradeData.selling || [], bought: tradeData.bought || [] });
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   };
 
   useEffect(() => { fetchAll(); }, []);
@@ -46,10 +34,14 @@ export default function Inventory() {
     myTrades.selling.filter(t => t.status === 'OPEN').map(t => [t.ticketId, t])
   );
 
-  const handleListForSale = async (ticketId: number) => {
+  const handleListForSale = async (ticketId: number, maxPrice: number) => {
     const price = parseInt(sellPrice[ticketId] || '0');
     if (!price || price <= 0) {
-      setModal({ open: true, type: 'error', title: 'ผิดพลาด', msg: 'กรุณากรอกราคาที่ถูกต้อง', action: null });
+      setModal({ open: true, type: 'error', title: 'ผิดพลาด', msg: 'กรุณากรอกราคาที่มากกว่า $0', action: null });
+      return;
+    }
+    if (price > maxPrice) {
+      setModal({ open: true, type: 'error', title: 'ผิดพลาด', msg: `คุณสามารถตั้งราคาได้สูงสุด $${maxPrice} เท่านั้น`, action: null });
       return;
     }
     try {
@@ -73,26 +65,18 @@ export default function Inventory() {
 
   const handleCancelTrade = (tradeId: number) => {
     setModal({
-      open: true,
-      type: 'confirm',
-      title: 'ยืนยันการยกเลิก',
-      msg: 'ต้องการยกเลิกการลงขายตั๋วนี้ใช่หรือไม่?',
+      open: true, type: 'confirm', title: 'ยืนยันการยกเลิก', msg: 'ต้องการยกเลิกการลงขายตั๋วนี้ใช่หรือไม่?',
       action: async () => {
         try {
           const res = await fetch(`http://localhost:5000/api/trades/${tradeId}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` },
+            method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` },
           });
           const data = await res.json();
           if (data.success) {
             setModal({ open: true, type: 'success', title: 'ยกเลิกสำเร็จ', msg: 'ยกเลิกการลงขายเรียบร้อยแล้ว', action: null });
             fetchAll();
-          } else {
-            setModal({ open: true, type: 'error', title: 'ผิดพลาด', msg: data.error, action: null });
-          }
-        } catch {
-          setModal({ open: true, type: 'error', title: 'ผิดพลาด', msg: 'ระบบขัดข้อง', action: null });
-        }
+          } else { setModal({ open: true, type: 'error', title: 'ผิดพลาด', msg: data.error, action: null }); }
+        } catch { setModal({ open: true, type: 'error', title: 'ผิดพลาด', msg: 'ระบบขัดข้อง', action: null }); }
       }
     });
   };
@@ -101,11 +85,7 @@ export default function Inventory() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
-      <Modal
-        isOpen={modal.open}
-        type={modal.type}
-        title={modal.title}
-        message={modal.msg}
+      <Modal isOpen={modal.open} type={modal.type} title={modal.title} message={modal.msg}
         onClose={() => setModal({ ...modal, open: false })}
         onConfirm={modal.type === 'confirm' && modal.action ? modal.action : undefined}
       />
@@ -115,10 +95,7 @@ export default function Inventory() {
           <h1 className="text-4xl font-extrabold text-white mb-2">คลังตั๋วของฉัน</h1>
           <p className="text-gray-400">คุณมีตั๋วทั้งหมด {tickets.length} ใบ</p>
         </div>
-        <Link
-          to="/trade"
-          className="flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/50 text-blue-400 px-5 py-2.5 rounded-xl font-bold text-sm transition"
-        >
+        <Link to="/trade" className="flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/50 text-blue-400 px-5 py-2.5 rounded-xl font-bold text-sm transition">
           <ShoppingBag size={16} /> ดูตลาด Trade
         </Link>
       </div>
@@ -137,21 +114,34 @@ export default function Inventory() {
             const concert = ticket.seat.concert;
             const seat = ticket.seat;
             const openTrade = openTradeByTicketId[ticket.id];
+            
+            // เช็คสถานะ Tradeable หรือ Untradeable
+            const isUntradeable = ticket.trade && ticket.trade.status === 'SOLD';
+            const maxPrice = Math.floor(seat.price * 0.9); // คำนวณราคา 90% ของราคาเต็ม
 
             return (
-              <div
-                key={ticket.id}
-                className="bg-gradient-to-br from-blue-900/40 to-gray-900 border border-blue-500/20 rounded-2xl p-6 relative overflow-hidden shadow-xl"
-              >
+              <div key={ticket.id} className="bg-gradient-to-br from-blue-900/40 to-gray-900 border border-blue-500/20 rounded-2xl p-6 relative overflow-hidden shadow-xl">
                 <Ticket className="absolute -bottom-4 -right-4 w-32 h-32 text-white/5 -rotate-12 pointer-events-none" />
 
-                {openTrade && (
-                  <div className="absolute top-4 right-4 z-10 bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
-                    กำลังลงขาย ฿{openTrade.price.toLocaleString()}
-                  </div>
-                )}
+                {/* ป้ายแสดงสถานะขวาบน */}
+                <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 items-end">
+                  {openTrade && (
+                    <div className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg">
+                      กำลังลงขาย ${openTrade.price}
+                    </div>
+                  )}
+                  {isUntradeable ? (
+                    <div className="flex items-center gap-1 bg-red-500/20 text-red-400 border border-red-500/30 text-xs px-2 py-1 rounded-full font-bold backdrop-blur-md">
+                      <ShieldAlert size={12} /> UNTRADEABLE
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 bg-green-500/20 text-green-400 border border-green-500/30 text-xs px-2 py-1 rounded-full font-bold backdrop-blur-md">
+                      <ShieldCheck size={12} /> TRADEABLE
+                    </div>
+                  )}
+                </div>
 
-                <div className="flex justify-between items-start mb-2 relative z-10">
+                <div className="flex justify-between items-start mb-2 relative z-10 pr-24">
                   <Link to={`/event/${concert.id}`} className="group flex items-start gap-2">
                     <h3 className="text-xl font-bold text-white line-clamp-1 group-hover:text-blue-400 transition-colors">
                       {concert.name}
@@ -176,56 +166,30 @@ export default function Inventory() {
                   </div>
                 </div>
 
+                {/* ส่วนของปุ่มลงขาย */}
                 {openTrade ? (
-                  <button
-                    onClick={() => handleCancelTrade(openTrade.id)}
-                    className="w-full flex items-center justify-center gap-2 bg-red-900/30 hover:bg-red-900/60 border border-red-700/50 text-red-400 py-2.5 rounded-xl font-bold text-sm transition relative z-10"
-                  >
+                  <button onClick={() => handleCancelTrade(openTrade.id)} className="w-full flex items-center justify-center gap-2 bg-red-900/30 hover:bg-red-900/60 border border-red-700/50 text-red-400 py-2.5 rounded-xl font-bold text-sm transition relative z-10">
                     <X size={14} /> ยกเลิกการลงขาย
                   </button>
                 ) : (
-                  <div className="flex gap-2 relative z-10">
-                    <input
-                      type="number"
-                      min="1"
-                      placeholder="ราคา (฿)"
-                      value={sellPrice[ticket.id] || ''}
-                      onChange={e => setSellPrice(prev => ({ ...prev, [ticket.id]: e.target.value }))}
-                      className="flex-1 bg-gray-800 border border-gray-700 text-white text-sm px-3 py-2.5 rounded-xl focus:outline-none focus:border-blue-500 transition"
-                    />
-                    <button
-                      onClick={() => handleListForSale(ticket.id)}
-                      className="flex items-center gap-1 bg-green-700 hover:bg-green-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition shrink-0"
-                    >
-                      <Tag size={14} /> ลงขาย
-                    </button>
-                  </div>
+                  !isUntradeable && (
+                    <div className="flex gap-2 relative z-10">
+                      <input
+                        type="number" min="1" max={maxPrice}
+                        placeholder={`ขายสูงสุด $${maxPrice}`}
+                        value={sellPrice[ticket.id] || ''}
+                        onChange={e => setSellPrice(prev => ({ ...prev, [ticket.id]: e.target.value }))}
+                        className="flex-1 bg-gray-800 border border-gray-700 text-white text-sm px-3 py-2.5 rounded-xl focus:outline-none focus:border-blue-500 transition"
+                      />
+                      <button onClick={() => handleListForSale(ticket.id, maxPrice)} className="flex items-center gap-1 bg-green-700 hover:bg-green-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition shrink-0">
+                        <Tag size={14} /> ลงขาย
+                      </button>
+                    </div>
+                  )
                 )}
               </div>
             );
           })}
-        </div>
-      )}
-
-      {myTrades.bought.length > 0 && (
-        <div>
-          <h2 className="text-2xl font-bold text-white mb-5">ตั๋วที่ซื้อจากตลาด Trade</h2>
-          <div className="space-y-3">
-            {myTrades.bought.map((trade: any) => {
-              const concert = trade.ticket.seat.concert;
-              const seat = trade.ticket.seat;
-              return (
-                <div key={trade.id} className="bg-gray-900 border border-gray-800 rounded-2xl p-5 flex justify-between items-center">
-                  <div>
-                    <p className="font-bold text-white">{concert.name}</p>
-                    <p className="text-sm text-gray-400">{concert.date} | {concert.venue} | แถว {seat.row} ที่ {seat.number} ({seat.tier})</p>
-                    <p className="text-xs text-gray-600 mt-1">ซื้อจาก: {trade.seller.email.split('@')[0]}***</p>
-                  </div>
-                  <p className="text-green-400 font-extrabold text-xl">฿{trade.price.toLocaleString()}</p>
-                </div>
-              );
-            })}
-          </div>
         </div>
       )}
     </div>

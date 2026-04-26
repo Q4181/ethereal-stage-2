@@ -11,7 +11,6 @@ const app = express();
 app.use(cors()); 
 app.use(express.json());
 
-// ================== Middleware ==================
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -28,42 +27,26 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
-// ================== Public & User API ==================
-
-// สมัครสมาชิกใหม่
 app.post('/api/register', async (req, res) => {
   const { email, password } = req.body;
   try {
-    // เช็คว่ามีอีเมลนี้หรือยัง
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) return res.status(400).json({ error: 'อีเมลนี้ถูกใช้งานแล้ว' });
-    
-    // สร้าง User ใหม่ (ให้ Role พื้นฐานเป็น USER)
-    const newUser = await prisma.user.create({
-      data: { email, password, role: 'USER' }
-    });
-    
-    // สร้าง Token ให้ล็อกอินอัตโนมัติเลย
+    const newUser = await prisma.user.create({ data: { email, password, role: 'USER' } });
     const token = jwt.sign({ id: newUser.id, role: newUser.role }, SECRET_KEY, { expiresIn: '24h' });
     res.json({ success: true, token, role: newUser.role });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// ล็อกอิน
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   const user = await prisma.user.findUnique({ where: { email } });
   if (user && user.password === password) {
     const token = jwt.sign({ id: user.id, role: user.role }, SECRET_KEY, { expiresIn: '24h' });
     res.json({ success: true, token, role: user.role });
-  } else {
-    res.status(401).json({ error: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' });
-  }
+  } else { res.status(401).json({ error: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง' }); }
 });
 
-// ดึงคอนเสิร์ต (User เห็นแค่ Public)
 app.get('/api/concerts', async (req, res) => {
   try {
     const concerts = await prisma.concert.findMany({ where: { isPublished: true } });
@@ -71,7 +54,6 @@ app.get('/api/concerts', async (req, res) => {
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// ดูรายละเอียดคอนเสิร์ต
 app.get('/api/concerts/:id', async (req, res) => {
   try {
     const concert = await prisma.concert.findUnique({
@@ -83,19 +65,20 @@ app.get('/api/concerts/:id', async (req, res) => {
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// ดูคลังตั๋ว (Inventory)
 app.get('/api/users/me/tickets', authenticateToken, async (req, res) => {
   try {
     const tickets = await prisma.ticket.findMany({
       where: { userId: req.user.id },
-      include: { seat: { include: { concert: true } } },
+      include: { 
+        seat: { include: { concert: true } },
+        trade: true 
+      },
       orderBy: { purchasedAt: 'desc' }
     });
     res.json(tickets);
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// ซื้อตั๋ว
 app.post('/api/tickets/buy', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   const { seatIds } = req.body; 
@@ -110,7 +93,6 @@ app.post('/api/tickets/buy', authenticateToken, async (req, res) => {
   } catch (error) { res.status(400).json({ error: error.message }); }
 });
 
-// ================== Admin API ==================
 app.get('/api/admin/concerts', authenticateToken, isAdmin, async (req, res) => {
   try {
     const concerts = await prisma.concert.findMany();
@@ -143,39 +125,25 @@ app.delete('/api/admin/concerts/:id', authenticateToken, isAdmin, async (req, re
   try {
     const concertId = parseInt(req.params.id);
     await prisma.$transaction([
-      // 1. เพิ่มบรรทัดนี้: ต้องลบรายการ Trade ที่ผูกกับตั๋วของคอนเสิร์ตนี้ทิ้งก่อน
       prisma.trade.deleteMany({ where: { ticket: { seat: { concertId } } } }),
-      // 2. ลบตั๋ว
       prisma.ticket.deleteMany({ where: { seat: { concertId } } }),
-      // 3. ลบที่นั่ง
       prisma.seat.deleteMany({ where: { concertId } }),
-      // 4. ลบคอนเสิร์ต
       prisma.concert.delete({ where: { id: concertId } })
     ]);
     res.json({ success: true });
-  } catch (error) { 
-    res.status(400).json({ error: error.message }); 
-  }
+  } catch (error) { res.status(400).json({ error: error.message }); }
 });
 
 // ================== Trade API ==================
-
-// ดูตลาด Trade ทั้งหมด (OPEN listings) พร้อม filter ตาม concert
 app.get('/api/trades', async (req, res) => {
   try {
     const { concertId } = req.query;
     const where = { status: 'OPEN' };
-    if (concertId) {
-      where.ticket = { seat: { concertId: parseInt(concertId) } };
-    }
+    if (concertId) { where.ticket = { seat: { concertId: parseInt(concertId) } }; }
     const trades = await prisma.trade.findMany({
       where,
       include: {
-        ticket: {
-          include: {
-            seat: { include: { concert: true } }
-          }
-        },
+        ticket: { include: { seat: { include: { concert: true } } } },
         seller: { select: { id: true, email: true } }
       },
       orderBy: { listedAt: 'desc' }
@@ -184,31 +152,41 @@ app.get('/api/trades', async (req, res) => {
   } catch (error) { res.status(500).json({ error: error.message }); }
 });
 
-// ลงขายตั๋ว (ต้องเป็นเจ้าของ)
 app.post('/api/trades', authenticateToken, async (req, res) => {
   const { ticketId, price } = req.body;
   const sellerId = req.user.id;
   try {
-    // ตรวจสอบว่าตั๋วเป็นของ user นี้จริง และยังไม่ได้ลงขาย
     const ticket = await prisma.ticket.findUnique({
       where: { id: ticketId },
-      include: { trade: true }
+      include: { trade: true, seat: true }
     });
+    
     if (!ticket) return res.status(404).json({ error: 'ไม่พบตั๋ว' });
     if (ticket.userId !== sellerId) return res.status(403).json({ error: 'ตั๋วนี้ไม่ใช่ของคุณ' });
-    if (ticket.trade && ticket.trade.status === 'OPEN') return res.status(400).json({ error: 'ตั๋วนี้ถูกลงขายอยู่แล้ว' });
+    
+    // จัดการเคลียร์ปัญหา Unique Constraint (บั๊กขายซ้ำไม่ได้)
+    if (ticket.trade) {
+      if (ticket.trade.status === 'OPEN') return res.status(400).json({ error: 'ตั๋วนี้ถูกลงขายอยู่แล้ว' });
+      if (ticket.trade.status === 'SOLD') return res.status(400).json({ error: 'บัตรนี้เป็นบัตรซื้อต่อมา ไม่สามารถขายซ้ำได้' });
+      if (ticket.trade.status === 'CANCELLED') {
+        // ลบข้อมูล Cancelled อันเก่าทิ้งไปเลย เพื่อคืนพื้นที่ให้สร้าง Trade ใหม่ได้
+        await prisma.trade.delete({ where: { id: ticket.trade.id } });
+      }
+    }
+
+    // เงื่อนไขราคา: ห้ามติดลบ และ ห้ามเกิน 90% ของราคาเต็ม
+    const maxPrice = Math.floor(ticket.seat.price * 0.9);
+    if (price <= 0) return res.status(400).json({ error: 'ราคาขายต้องมากกว่า $0' });
+    if (price > maxPrice) return res.status(400).json({ error: `ไม่สามารถขายเกินราคา $${maxPrice} ได้` });
 
     const trade = await prisma.trade.create({
       data: { ticketId, sellerId, price: parseInt(price), status: 'OPEN' },
-      include: {
-        ticket: { include: { seat: { include: { concert: true } } } }
-      }
+      include: { ticket: { include: { seat: { include: { concert: true } } } } }
     });
     res.json({ success: true, trade });
   } catch (error) { res.status(400).json({ error: error.message }); }
 });
 
-// ซื้อตั๋ว Trade (ต้อง login และห้ามซื้อของตัวเอง)
 app.post('/api/trades/:id/buy', authenticateToken, async (req, res) => {
   const tradeId = parseInt(req.params.id);
   const buyerId = req.user.id;
@@ -222,13 +200,11 @@ app.post('/api/trades/:id/buy', authenticateToken, async (req, res) => {
       if (trade.status !== 'OPEN') throw new Error('รายการนี้ถูกซื้อหรือยกเลิกไปแล้ว');
       if (trade.sellerId === buyerId) throw new Error('ไม่สามารถซื้อตั๋วของตัวเองได้');
 
-      // โอนความเป็นเจ้าของตั๋ว
       await tx.ticket.update({
         where: { id: trade.ticketId },
         data: { userId: buyerId }
       });
 
-      // อัปเดต Trade ว่า SOLD
       return await tx.trade.update({
         where: { id: tradeId },
         data: { status: 'SOLD', buyerId, soldAt: new Date() },
@@ -242,7 +218,6 @@ app.post('/api/trades/:id/buy', authenticateToken, async (req, res) => {
   } catch (error) { res.status(400).json({ error: error.message }); }
 });
 
-// ยกเลิกการลงขาย (ต้องเป็น seller)
 app.delete('/api/trades/:id', authenticateToken, async (req, res) => {
   const tradeId = parseInt(req.params.id);
   const userId = req.user.id;
@@ -252,12 +227,12 @@ app.delete('/api/trades/:id', authenticateToken, async (req, res) => {
     if (trade.sellerId !== userId) return res.status(403).json({ error: 'คุณไม่ใช่ผู้ลงขายรายการนี้' });
     if (trade.status !== 'OPEN') return res.status(400).json({ error: 'ไม่สามารถยกเลิกรายการที่เสร็จสิ้นแล้ว' });
 
-    await prisma.trade.update({ where: { id: tradeId }, data: { status: 'CANCELLED' } });
+    // แก้บั๊ก: เปลี่ยนจากอัปเดตเป็น CANCELLED ให้เป็นการ "ลบทิ้ง" ไปเลย เพื่อคืนสิทธิ์ให้ตั้งขายใหม่ได้
+    await prisma.trade.delete({ where: { id: tradeId } });
     res.json({ success: true });
   } catch (error) { res.status(400).json({ error: error.message }); }
 });
 
-// ดู Trade ของตัวเอง (ทั้งที่ลงขายและที่ซื้อมา)
 app.get('/api/users/me/trades', authenticateToken, async (req, res) => {
   try {
     const [selling, bought] = await Promise.all([
