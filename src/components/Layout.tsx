@@ -56,7 +56,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </button>
             )}
             <Link to="/" className="text-2xl font-extrabold text-blue-500 tracking-tighter flex items-center gap-2 hover:scale-105 transition-transform">
-              <Ticket className="w-8 h-8" /> ETHEREAL STAGE
+              <Ticket className="w-8 h-8" /> Magic Ticket
             </Link>
           </div>
 
@@ -83,7 +83,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </nav>
       <main className="flex-grow">{children}</main>
       <footer className="py-8 text-center text-gray-600 border-t border-gray-900 bg-gray-950 mt-12 text-sm">
-        © 2024 Ethereal Stage. All rights reserved.
+        Magic ticket.
       </footer>
     </div>
   );
