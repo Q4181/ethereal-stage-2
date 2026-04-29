@@ -66,7 +66,7 @@ export default function Checkout() {
   if (step === 'processing') {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center gap-6 text-white">
-        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
         <p className="text-xl font-bold text-gray-300">กำลังดำเนินการชำระเงิน...</p>
         <p className="text-gray-500 text-sm">กรุณาอย่าปิดหน้าต่างนี้</p>
       </div>
@@ -84,8 +84,8 @@ export default function Checkout() {
       <div className="flex items-center gap-3 mb-10 justify-center">
         {(['summary', 'payment'] as const).map((s, i) => (
           <React.Fragment key={s}>
-            <div className={`flex items-center gap-2 text-sm font-bold ${step === s ? 'text-blue-400' : 'text-gray-600'}`}>
-              <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold ${step === s ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-500'}`}>{i + 1}</span>
+            <div className={`flex items-center gap-2 text-sm font-bold ${step === s ? 'text-purple-400' : 'text-gray-600'}`}>
+              <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-extrabold ${step === s ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-500'}`}>{i + 1}</span>
               {s === 'summary' ? 'สรุปรายการ' : 'ชำระเงิน'}
             </div>
             {i < 1 && <ChevronRight size={16} className="text-gray-700" />}
@@ -97,7 +97,7 @@ export default function Checkout() {
         <div className="lg:col-span-3">
           {step === 'summary' && (
             <div className="bg-gray-900 border border-gray-800 rounded-3xl p-8">
-              <h2 className="text-2xl font-extrabold text-white mb-6 flex items-center gap-3"><Ticket className="text-blue-400" /> ที่นั่งที่เลือก</h2>
+              <h2 className="text-2xl font-extrabold text-white mb-6 flex items-center gap-3"><Ticket className="text-purple-400" /> ที่นั่งที่เลือก</h2>
               <div className="space-y-3 mb-8">
                 {tradeItem ? (
                   <div className="flex justify-between items-center bg-gray-800 p-4 rounded-xl border border-yellow-500/30">
@@ -111,7 +111,7 @@ export default function Checkout() {
                   selectedSeats.map((seat: any) => (
                     <div key={seat.id} className="flex justify-between items-center bg-gray-800 p-4 rounded-xl">
                       <div className="flex items-center gap-3">
-                        <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded font-bold">{seat.tier}</span>
+                        <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded font-bold">{seat.tier}</span>
                         <span className="text-white font-bold">แถว {seat.row} ที่นั่ง {seat.number}</span>
                       </div>
                       <span className="text-gray-300 font-bold">฿{seat.price.toLocaleString()}</span>
@@ -119,41 +119,41 @@ export default function Checkout() {
                   ))
                 )}
               </div>
-              <button onClick={() => setStep('payment')} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-extrabold py-4 rounded-2xl text-lg transition">ดำเนินการชำระเงิน →</button>
+              <button onClick={() => setStep('payment')} className="w-full bg-purple-600 hover:bg-purple-500 text-white font-extrabold py-4 rounded-2xl text-lg transition">ดำเนินการชำระเงิน →</button>
             </div>
           )}
 
           {step === 'payment' && (
              <div className="bg-gray-900 border border-gray-800 rounded-3xl p-8">
-             <h2 className="text-2xl font-extrabold text-white mb-6 flex items-center gap-2"><CreditCard className="text-blue-400" /> วิธีชำระเงิน</h2>
+             <h2 className="text-2xl font-extrabold text-white mb-6 flex items-center gap-2"><CreditCard className="text-purple-400" /> วิธีชำระเงิน</h2>
              <div className="grid grid-cols-3 gap-3 mb-6">
                {[
                  { key: 'card', label: '💳 บัตรเครดิต/เดบิต' },
                  { key: 'promptpay', label: '📱 PromptPay' },
                  { key: 'truemoney', label: '💛 TrueMoney' },
                ].map(m => (
-                 <button key={m.key} type="button" onClick={() => setPaymentMethod(m.key as PaymentMethod)} className={`p-3 rounded-xl border text-sm font-bold text-center transition ${paymentMethod === m.key ? 'border-blue-500 bg-blue-600/20 text-blue-300' : 'border-gray-700 bg-gray-800 text-gray-400 hover:border-gray-600'}`}>{m.label}</button>
+                 <button key={m.key} type="button" onClick={() => setPaymentMethod(m.key as PaymentMethod)} className={`p-3 rounded-xl border text-sm font-bold text-center transition ${paymentMethod === m.key ? 'border-purple-500 bg-purple-600/20 text-purple-300' : 'border-gray-700 bg-gray-800 text-gray-400 hover:border-gray-600'}`}>{m.label}</button>
                ))}
              </div>
 
              {paymentMethod === 'card' && (
                <div className="space-y-4">
-                 <div className="bg-gradient-to-br from-blue-800 to-blue-950 rounded-2xl p-6 mb-6 relative overflow-hidden">
+                 <div className="bg-gradient-to-br from-purple-800 to-blue-950 rounded-2xl p-6 mb-6 relative overflow-hidden">
                    <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-10 translate-x-10" />
                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-10 -translate-x-10" />
-                   <p className="text-blue-300 text-xs mb-4 font-bold tracking-widest">CREDIT / DEBIT CARD</p>
+                   <p className="text-purple-300 text-xs mb-4 font-bold tracking-widest">CREDIT / DEBIT CARD</p>
                    <p className="text-white text-2xl font-mono tracking-widest mb-4">{cardData.number || '•••• •••• •••• ••••'}</p>
                    <div className="flex justify-between items-end">
-                     <div><p className="text-blue-400 text-xs">CARD HOLDER</p><p className="text-white font-bold uppercase">{cardData.name || 'YOUR NAME'}</p></div>
-                     <div className="text-right"><p className="text-blue-400 text-xs">EXPIRES</p><p className="text-white font-bold">{cardData.expiry || 'MM/YY'}</p></div>
+                     <div><p className="text-purple-400 text-xs">CARD HOLDER</p><p className="text-white font-bold uppercase">{cardData.name || 'YOUR NAME'}</p></div>
+                     <div className="text-right"><p className="text-purple-400 text-xs">EXPIRES</p><p className="text-white font-bold">{cardData.expiry || 'MM/YY'}</p></div>
                    </div>
                  </div>
 
-                 <div><label className="block text-sm text-gray-400 mb-1">หมายเลขบัตร</label><input type="text" inputMode="numeric" placeholder="0000 0000 0000 0000" value={cardData.number} onChange={e => setCardData({ ...cardData, number: formatCardNumber(e.target.value) })} className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl text-white font-mono focus:border-blue-500 outline-none" /></div>
-                 <div><label className="block text-sm text-gray-400 mb-1">ชื่อบนบัตร</label><input type="text" placeholder="JOHN DOE" value={cardData.name} onChange={e => setCardData({ ...cardData, name: e.target.value.toUpperCase() })} className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl text-white uppercase focus:border-blue-500 outline-none" /></div>
+                 <div><label className="block text-sm text-gray-400 mb-1">หมายเลขบัตร</label><input type="text" inputMode="numeric" placeholder="0000 0000 0000 0000" value={cardData.number} onChange={e => setCardData({ ...cardData, number: formatCardNumber(e.target.value) })} className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl text-white font-mono focus:border-purple-500 outline-none" /></div>
+                 <div><label className="block text-sm text-gray-400 mb-1">ชื่อบนบัตร</label><input type="text" placeholder="JOHN DOE" value={cardData.name} onChange={e => setCardData({ ...cardData, name: e.target.value.toUpperCase() })} className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl text-white uppercase focus:border-purple-500 outline-none" /></div>
                  <div className="grid grid-cols-2 gap-4">
-                   <div><label className="block text-sm text-gray-400 mb-1">วันหมดอายุ</label><input type="text" inputMode="numeric" placeholder="MM/YY" value={cardData.expiry} onChange={e => setCardData({ ...cardData, expiry: formatExpiry(e.target.value) })} className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl text-white font-mono focus:border-blue-500 outline-none" /></div>
-                   <div><label className="block text-sm text-gray-400 mb-1">CVV</label><input type="password" inputMode="numeric" placeholder="•••" maxLength={4} value={cardData.cvv} onChange={e => setCardData({ ...cardData, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) })} className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl text-white font-mono focus:border-blue-500 outline-none" /></div>
+                   <div><label className="block text-sm text-gray-400 mb-1">วันหมดอายุ</label><input type="text" inputMode="numeric" placeholder="MM/YY" value={cardData.expiry} onChange={e => setCardData({ ...cardData, expiry: formatExpiry(e.target.value) })} className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl text-white font-mono focus:border-purple-500 outline-none" /></div>
+                   <div><label className="block text-sm text-gray-400 mb-1">CVV</label><input type="password" inputMode="numeric" placeholder="•••" maxLength={4} value={cardData.cvv} onChange={e => setCardData({ ...cardData, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) })} className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl text-white font-mono focus:border-purple-500 outline-none" /></div>
                  </div>
                </div>
              )}
@@ -172,7 +172,7 @@ export default function Checkout() {
                  </div>
                  <p className="text-white font-bold text-lg mb-1">สแกน QR เพื่อชำระเงิน</p>
                  <p className="text-gray-400 text-sm mb-2">PromptPay หมายเลข: 0xx-xxx-xxxx</p>
-                 <p className="text-blue-400 font-extrabold text-2xl">฿{total.toLocaleString()}</p>
+                 <p className="text-purple-400 font-extrabold text-2xl">฿{total.toLocaleString()}</p>
                  <p className="text-gray-500 text-xs mt-3">QR จะหมดอายุใน 15 นาที</p>
                </div>
              )}
@@ -208,7 +208,7 @@ export default function Checkout() {
                 ))
               )}
             </div>
-            <div className="border-t border-gray-800 pt-4 flex justify-between items-center"><span className="text-gray-400 font-bold">ยอดรวม</span><span className="text-3xl font-extrabold text-blue-400">฿{total.toLocaleString()}</span></div>
+            <div className="border-t border-gray-800 pt-4 flex justify-between items-center"><span className="text-gray-400 font-bold">ยอดรวม</span><span className="text-3xl font-extrabold text-purple-400">฿{total.toLocaleString()}</span></div>
           </div>
         </div>
       </div>

@@ -46,28 +46,28 @@ export default function Login() {
         
         <div className="mb-5">
           <label className="block text-gray-400 text-sm font-bold mb-2">อีเมล</label>
-          <input required type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition" />
+          <input required type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-purple-500 transition" />
         </div>
         
         <div className={isRegisterMode ? "mb-5" : "mb-8"}>
           <label className="block text-gray-400 text-sm font-bold mb-2">รหัสผ่าน {isRegisterMode && <span className="text-xs font-normal text-gray-500">(ขั้นต่ำ 8 ตัวอักษร)</span>}</label>
-          <input required type="password" value={password} onChange={e => setPassword(e.target.value)} minLength={isRegisterMode ? 8 : undefined} className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition" />
+          <input required type="password" value={password} onChange={e => setPassword(e.target.value)} minLength={isRegisterMode ? 8 : undefined} className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-purple-500 transition" />
         </div>
 
         {isRegisterMode && (
           <div className="mb-8">
             <label className="block text-gray-400 text-sm font-bold mb-2">ยืนยันรหัสผ่านอีกครั้ง</label>
-            <input required type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} minLength={8} className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-blue-500 transition" />
+            <input required type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} minLength={8} className="w-full p-4 rounded-xl bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-purple-500 transition" />
           </div>
         )}
 
-        <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl text-white font-bold text-lg transition shadow-lg mb-6">
+        <button type="submit" className="w-full bg-purple-600 hover:bg-purple-500 py-4 rounded-xl text-white font-bold text-lg transition shadow-lg mb-6">
           {isRegisterMode ? 'สมัครสมาชิก' : 'เข้าสู่ระบบ'}
         </button>
 
         <div className="text-center text-gray-400 text-sm">
           {isRegisterMode ? 'มีบัญชีอยู่แล้วใช่ไหม? ' : 'ยังไม่มีบัญชีใช่ไหม? '}
-          <button type="button" onClick={() => { setIsRegisterMode(!isRegisterMode); setEmail(''); setPassword(''); setConfirmPassword(''); }} className="text-blue-500 hover:text-blue-400 font-bold underline">
+          <button type="button" onClick={() => { setIsRegisterMode(!isRegisterMode); setEmail(''); setPassword(''); setConfirmPassword(''); }} className="text-purple-500 hover:text-purple-400 font-bold underline">
             {isRegisterMode ? 'เข้าสู่ระบบที่นี่' : 'สมัครสมาชิกที่นี่'}
           </button>
         </div>

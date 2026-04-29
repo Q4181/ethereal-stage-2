@@ -29,14 +29,14 @@ export default function SeatMap({
   return (
     <div className="w-full">
       {/* เวที */}
-      <div className={`w-full h-16 bg-gradient-to-b ${mode === 'trade' ? 'from-yellow-600/20 border-yellow-500/50' : 'from-blue-600/30 border-blue-500/50'} to-transparent rounded-t-full border-t mb-16 flex items-center justify-center`}>
-        <span className={`${mode === 'trade' ? 'text-yellow-300' : 'text-blue-300'} font-bold tracking-[0.5em] text-sm`}>STAGE</span>
+      <div className={`w-full h-16 bg-gradient-to-b ${mode === 'trade' ? 'from-yellow-600/20 border-yellow-500/50' : 'from-purple-600/30 border-purple-500/50'} to-transparent rounded-t-full border-t mb-16 flex items-center justify-center`}>
+        <span className={`${mode === 'trade' ? 'text-yellow-300' : 'text-purple-300'} font-bold tracking-[0.5em] text-sm`}>STAGE</span>
       </div>
 
       {/* เรนเดอร์โซนที่นั่ง */}
       {Object.keys(groupedSeats).map((tierName) => (
         <div key={tierName} className="mb-12">
-          <h3 className={`font-bold mb-6 tracking-widest text-sm uppercase text-center ${mode === 'trade' ? 'text-gray-500' : 'text-blue-400'}`}>
+          <h3 className={`font-bold mb-6 tracking-widest text-sm uppercase text-center ${mode === 'trade' ? 'text-gray-500' : 'text-purple-400'}`}>
             {tierName} SECTION
           </h3>
           
@@ -62,7 +62,7 @@ export default function SeatMap({
                       onClickHandler = () => onSeatClick(seat);
                       
                       if (isSold) btnClass = 'bg-gray-800 text-gray-700 cursor-not-allowed';
-                      else if (isSelected) btnClass = 'bg-blue-500 text-white scale-110 shadow-lg border border-blue-400';
+                      else if (isSelected) btnClass = 'bg-purple-500 text-white scale-110 shadow-lg border border-purple-400';
                       else btnClass = 'bg-gray-800 border border-gray-700 text-gray-400 hover:bg-gray-600';
                     } 
                     // คำนวณสีปุ่มสำหรับโหมดตลาด Trade

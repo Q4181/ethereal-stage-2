@@ -52,7 +52,7 @@ export default function EventDetails() {
         </div>
 
         <h1 className="text-4xl font-extrabold text-white mb-2">{concert.name}</h1>
-        <p className="text-blue-400 font-bold mb-6">{concert.date} | {concert.venue}</p>
+        <p className="text-purple-400 font-bold mb-6">{concert.date} | {concert.venue}</p>
         
         {concert.description && (
           <p className="text-gray-400 mb-12 whitespace-pre-line leading-relaxed">{concert.description}</p>
@@ -72,7 +72,7 @@ export default function EventDetails() {
           <p className="text-gray-400 text-sm">เลือกแล้ว {selectedSeats.length} ที่นั่ง</p>
           <p className="text-3xl font-extrabold text-white">${selectedSeats.reduce((sum, s) => sum + s.price, 0)}</p>
         </div>
-        <button onClick={handleProceed} className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold text-lg transition-colors shadow-lg">
+        <button onClick={handleProceed} className="bg-purple-600 hover:bg-purple-500 text-white px-8 py-4 rounded-xl font-bold text-lg transition-colors shadow-lg">
           ดำเนินการชำระเงิน
         </button>
       </div>

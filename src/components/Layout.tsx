@@ -55,7 +55,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <ArrowLeft size={20} />
               </button>
             )}
-            <Link to="/" className="text-2xl font-extrabold text-blue-500 tracking-tighter flex items-center gap-2 hover:scale-105 transition-transform">
+            <Link to="/" className="text-2xl font-extrabold text-purple-500 tracking-tighter flex items-center gap-2 hover:scale-105 transition-transform">
               <Ticket className="w-8 h-8" /> Magic Ticket
             </Link>
           </div>
@@ -74,7 +74,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </button>
               </>
             ) : (
-              <Link to="/login" className="flex items-center gap-2 text-gray-400 hover:text-blue-500 transition font-bold">
+              <Link to="/login" className="flex items-center gap-2 text-gray-400 hover:text-purple-500 transition font-bold">
                 <User size={20} /> เข้าสู่ระบบ / สมัครสมาชิก
               </Link>
             )}

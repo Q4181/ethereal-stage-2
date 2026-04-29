@@ -16,7 +16,7 @@ export default function Modal({ isOpen, type, title, message, onClose, onConfirm
   const icons = {
     success: <CheckCircle className="text-green-500 w-16 h-16" />,
     error: <XCircle className="text-red-500 w-16 h-16" />,
-    info: <Info className="text-blue-500 w-16 h-16" />,
+    info: <Info className="text-purple-500 w-16 h-16" />,
     confirm: <HelpCircle className="text-yellow-500 w-16 h-16" />
   };
 
@@ -48,7 +48,7 @@ export default function Modal({ isOpen, type, title, message, onClose, onConfirm
         ) : (
           <button
             onClick={onClose}
-            className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-colors shadow-lg"
+            className="w-full py-4 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-2xl transition-colors shadow-lg"
           >
             ตกลง
           </button>

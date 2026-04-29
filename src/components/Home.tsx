@@ -23,7 +23,6 @@ export default function Home() {
         console.error(err);
         setLoading(false); 
         
-        
         if (err.message.includes('token') || err.message.includes('Access denied')) {
           localStorage.removeItem('token');
           localStorage.removeItem('role');
@@ -49,7 +48,7 @@ export default function Home() {
     }
   };
 
-  if (loading) return <div className="text-center pt-32 text-gray-400 text-xl">Loading...</div>;
+  if (loading) return <div className="text-center pt-32 text-gray-400 text-xl">Loading Magic...</div>;
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
@@ -57,7 +56,7 @@ export default function Home() {
 
       {isAdmin && (
         <div className="flex justify-end">
-          <Link to="/admin/concert" className="bg-blue-600 hover:bg-blue-500 transition text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg">
+          <Link to="/admin/concert" className="bg-purple-600 hover:bg-purple-500 transition text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-purple-900/50">
             <Plus size={20} /> สร้างคอนเสิร์ต
           </Link>
         </div>
@@ -65,13 +64,13 @@ export default function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {concerts.map(concert => (
-          <div key={concert.id} className="relative group bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-blue-500 transition-all hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(59,130,246,0.1)]">
+          <div key={concert.id} className="relative group bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden hover:border-purple-500 transition-all hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(168,85,247,0.15)]">
             {isAdmin && !concert.isPublished && (
               <div className="absolute top-4 right-4 bg-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full z-20 shadow-lg">DRAFT</div>
             )}
             {isAdmin && (
               <div className="absolute top-4 left-4 z-20 flex gap-2">
-                <Link to={`/admin/concert/${concert.id}`} className="bg-blue-600/90 hover:bg-blue-500 p-2 rounded-lg text-white shadow-lg"><Edit size={16} /></Link>
+                <Link to={`/admin/concert/${concert.id}`} className="bg-purple-600/90 hover:bg-purple-500 p-2 rounded-lg text-white shadow-lg"><Edit size={16} /></Link>
                 <button onClick={() => confirmDelete(concert.id)} className="bg-red-600/90 hover:bg-red-500 p-2 rounded-lg text-white shadow-lg"><Trash2 size={16} /></button>
               </div>
             )}
@@ -80,7 +79,7 @@ export default function Home() {
                 <img src={concert.image || 'https://images.unsplash.com/photo-1540039155732-68ee23e15b51?w=800&q=80'} referrerPolicy="no-referrer" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors line-clamp-1">{concert.name}</h3>
+                <h3 className="text-xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors line-clamp-1">{concert.name}</h3>
                 <p className="text-gray-400 text-sm flex items-center gap-1"><MapPin size={14} /> {concert.venue}</p>
               </div>
             </Link>

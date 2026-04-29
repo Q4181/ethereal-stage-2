@@ -66,7 +66,7 @@ export default function Inventory() {
           <h1 className="text-4xl font-extrabold text-white mb-2">คลังตั๋วของฉัน</h1>
           <p className="text-gray-400">คุณมีตั๋วทั้งหมด {tickets.length} ใบ</p>
         </div>
-        <Link to="/trade" className="flex items-center gap-2 bg-blue-600/20 hover:bg-blue-600/40 border border-blue-500/50 text-blue-400 px-5 py-2.5 rounded-xl font-bold text-sm transition">
+        <Link to="/trade" className="flex items-center gap-2 bg-purple-600/20 hover:bg-purple-600/40 border border-purple-500/50 text-purple-400 px-5 py-2.5 rounded-xl font-bold text-sm transition">
           <ShoppingBag size={16} /> ดูตลาด Trade
         </Link>
       </div>
@@ -75,7 +75,7 @@ export default function Inventory() {
         <div className="bg-gray-900 border border-gray-800 rounded-3xl p-12 text-center text-gray-500 shadow-2xl">
           <Ticket size={64} className="mx-auto mb-4 opacity-50" />
           <p className="text-xl">คุณยังไม่มีตั๋วคอนเสิร์ตเลย</p>
-          <Link to="/" className="inline-block mt-6 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-full font-bold transition-colors">ดูคอนเสิร์ตทั้งหมด</Link>
+          <Link to="/" className="inline-block mt-6 bg-purple-600 hover:bg-purple-500 text-white px-8 py-3 rounded-full font-bold transition-colors">ดูคอนเสิร์ตทั้งหมด</Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-14">
@@ -87,7 +87,7 @@ export default function Inventory() {
             const maxPrice = Math.floor(seat.price * 0.9);
 
             return (
-              <div key={ticket.id} className="bg-gradient-to-br from-blue-900/40 to-gray-900 border border-blue-500/20 rounded-2xl p-6 relative overflow-hidden shadow-xl">
+              <div key={ticket.id} className="bg-gradient-to-br from-purple-900/40 to-gray-900 border border-purple-500/20 rounded-2xl p-6 relative overflow-hidden shadow-xl">
                 <Ticket className="absolute -bottom-4 -right-4 w-32 h-32 text-white/5 -rotate-12 pointer-events-none" />
                 <div className="absolute top-4 right-4 z-10 flex flex-col gap-2 items-end">
                   {openTrade && <div className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold shadow-lg">กำลังลงขาย ${openTrade.price}</div>}
@@ -100,8 +100,8 @@ export default function Inventory() {
 
                 <div className="flex justify-between items-start mb-2 relative z-10 pr-24">
                   <Link to={`/event/${concert.id}`} className="group flex items-start gap-2">
-                    <h3 className="text-xl font-bold text-white line-clamp-1 group-hover:text-blue-400 transition-colors">{concert.name}</h3>
-                    <ExternalLink size={16} className="text-gray-500 group-hover:text-blue-400 transition-colors mt-1 shrink-0" />
+                    <h3 className="text-xl font-bold text-white line-clamp-1 group-hover:text-purple-400 transition-colors">{concert.name}</h3>
+                    <ExternalLink size={16} className="text-gray-500 group-hover:text-purple-400 transition-colors mt-1 shrink-0" />
                   </Link>
                 </div>
 
@@ -113,7 +113,7 @@ export default function Inventory() {
                 <div className="bg-black/40 rounded-xl p-4 flex justify-between items-center border border-white/5 mb-4 relative z-10">
                   <div>
                     <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">โซน {seat.tier}</p>
-                    <p className="text-2xl font-extrabold text-blue-400">{seat.row}{seat.number}</p>
+                    <p className="text-2xl font-extrabold text-purple-400">{seat.row}{seat.number}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Ticket ID</p>
@@ -128,7 +128,7 @@ export default function Inventory() {
                 ) : (
                   !isUntradeable && (
                     <div className="flex gap-2 relative z-10">
-                      <input type="number" min="1" max={maxPrice} placeholder={`ขายสูงสุด $${maxPrice}`} value={sellPrice[ticket.id] || ''} onChange={e => setSellPrice(prev => ({ ...prev, [ticket.id]: e.target.value }))} className="flex-1 bg-gray-800 border border-gray-700 text-white text-sm px-3 py-2.5 rounded-xl focus:outline-none focus:border-blue-500 transition" />
+                      <input type="number" min="1" max={maxPrice} placeholder={`ขายสูงสุด $${maxPrice}`} value={sellPrice[ticket.id] || ''} onChange={e => setSellPrice(prev => ({ ...prev, [ticket.id]: e.target.value }))} className="flex-1 bg-gray-800 border border-gray-700 text-white text-sm px-3 py-2.5 rounded-xl focus:outline-none focus:border-purple-500 transition" />
                       <button onClick={() => handleListForSale(ticket.id, maxPrice)} className="flex items-center gap-1 bg-green-700 hover:bg-green-600 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition shrink-0">
                         <Tag size={14} /> ลงขาย
                       </button>

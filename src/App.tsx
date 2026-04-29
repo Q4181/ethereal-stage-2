@@ -17,7 +17,6 @@ export default function App() {
           <Route path="/event/:id" element={<EventDetails />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/login" element={<Login />} />
-          {/* เพิ่ม Routes สำหรับหน้าใหม่ด้านล่างนี้ครับ */}
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/trade" element={<TradeMarket />} />
           <Route path="/admin/concert" element={<AdminConcertForm />} />

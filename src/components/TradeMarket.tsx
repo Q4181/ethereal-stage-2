@@ -78,7 +78,7 @@ export default function TradeMarket() {
             <div>
               <span className="bg-yellow-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-3 inline-block shadow-lg shadow-yellow-600/20">TRADE MARKET ZONE</span>
               <h1 className="text-4xl font-extrabold text-white mb-2">{activeConcert.name}</h1>
-              <p className="text-blue-400 font-bold">{activeConcert.date} | {activeConcert.venue}</p>
+              <p className="text-purple-400 font-bold">{activeConcert.date} | {activeConcert.venue}</p>
             </div>
             <div className="bg-gray-800 p-4 rounded-xl text-sm border border-gray-700">
               <p className="text-white font-bold mb-2 flex items-center gap-2"><Info size={16}/> สัญลักษณ์ที่นั่ง</p>
@@ -108,7 +108,7 @@ export default function TradeMarket() {
               <p className="text-xl font-bold text-gray-500">กรุณาเลือกที่นั่งสีเขียว 1 ที่</p>
             )}
           </div>
-          <button disabled={!selectedTrade} onClick={() => navigate('/checkout', { state: { tradeItem: selectedTrade } })} className={`px-8 py-4 rounded-xl font-bold text-lg transition-colors shadow-lg ${selectedTrade ? 'bg-blue-600 hover:bg-blue-500 text-white' : 'bg-gray-700 text-gray-500 cursor-not-allowed'}`}>
+          <button disabled={!selectedTrade} onClick={() => navigate('/checkout', { state: { tradeItem: selectedTrade } })} className={`px-8 py-4 rounded-xl font-bold text-lg transition-colors shadow-lg ${selectedTrade ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-gray-700 text-gray-500 cursor-not-allowed'}`}>
             ดำเนินการชำระเงิน
           </button>
         </div>
@@ -141,7 +141,7 @@ export default function TradeMarket() {
                   มีตั๋ว Trade {item.tradeCount} ใบ
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2 line-clamp-1 group-hover:text-blue-400 transition-colors">{item.concert.name}</h3>
+              <h3 className="text-xl font-bold text-white mb-2 line-clamp-1 group-hover:text-purple-400 transition-colors">{item.concert.name}</h3>
               <div className="text-sm text-gray-400 mb-4 space-y-1">
                 <p className="flex items-center gap-2"><Calendar size={14} /> {item.concert.date}</p>
                 <p className="flex items-center gap-2"><MapPin size={14} /> {item.concert.venue}</p>
