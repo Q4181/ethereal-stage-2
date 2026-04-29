@@ -3,8 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('กำลังรีเซ็ตและสร้างข้อมูลเริ่มต้น...');
-
+  console.log('reset data');
 
   await prisma.trade.deleteMany({});
   await prisma.ticket.deleteMany({});
@@ -21,7 +20,7 @@ async function main() {
     }
   });
 
-
+  // สร้างคอนเสิร์ต
   await prisma.concert.create({
     data: {
       name: 'Magic Ticket Opening Show',
@@ -41,8 +40,8 @@ async function main() {
     }
   });
 
-  console.log('สร้างข้อมูลสำเร็จ!');
-  console.log('คุณสามารถใช้บัญชี Admin: admin@test.com / password123 เพื่อเข้าจัดการระบบได้ทันที');
+  console.log('Email: admin@gmail.com');
+  console.log('Password: 12345678');
 }
 
 main()

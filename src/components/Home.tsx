@@ -15,8 +15,21 @@ export default function Home() {
   useEffect(() => {
     const endpoint = isAdmin ? '/admin/concerts' : '/concerts';
     fetchAPI(endpoint)
-      .then(data => { setConcerts(data); setLoading(false); })
-      .catch(err => console.error(err));
+      .then(data => { 
+        setConcerts(data); 
+        setLoading(false); 
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false); 
+        
+        
+        if (err.message.includes('token') || err.message.includes('Access denied')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('role');
+          window.location.reload();
+        }
+      });
   }, [isAdmin]);
 
   const confirmDelete = (id: number) => {
