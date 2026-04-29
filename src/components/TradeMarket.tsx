@@ -24,6 +24,9 @@ export default function TradeMarket() {
       const grouped: { [key: number]: any } = {};
       data.forEach((trade: any) => {
         const concert = trade.ticket.seat.concert;
+        
+        if (!concert.isPublished) return;
+
         if (!grouped[concert.id]) grouped[concert.id] = { concert, tradeCount: 0, minPrice: trade.price };
         grouped[concert.id].tradeCount++;
         if (trade.price < grouped[concert.id].minPrice) grouped[concert.id].minPrice = trade.price;
@@ -85,7 +88,6 @@ export default function TradeMarket() {
             </div>
           </div>
 
-          {/* โค้ดผังที่นั่งเหลือแค่นี้! เรียกใช้งานในโหมด Trade */}
           <SeatMap 
             concert={activeConcert} 
             mode="trade" 
@@ -114,7 +116,6 @@ export default function TradeMarket() {
     );
   }
 
-  // ================= VIEW: LIST (หน้ารวมคอนเสิร์ต) =================
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <div className="flex items-center gap-3 mb-8 border-b border-gray-800 pb-6">
